@@ -8,37 +8,24 @@ interface ERC20
 
 contract Options
 {
+	//string name = '$MTRG Calls ($BUSD)';
+
 	uint256 public count;
 
 	mapping
 	(
 		uint256 => address;
 	)
-	public seller;
+	public writer;
 
 	mapping
 	(
 		uint256 => address;
 	)
-	public owner;
+	public ownerOf;
 
-	mapping
-	(
-		uint256 => address;
-	)
-	public saleToken;
-
-	mapping
-	(
-		uint256 => uint256;
-	)
-	public saleAmount;
-
-	mapping
-	(
-		uint256 => address;
-	)
-	public contractAddressA;
+	// $MTRG
+	address tokenA = 0x228ebbee999c6a7ad74a6130e81b12f9fe237ba3;
 
 	mapping
 	(
@@ -46,11 +33,8 @@ contract Options
 	) 
 	public amountA;
 
-	mapping
-	(
-		uint256 => address;
-	)
-	public contractAddressB
+	// $BUSD
+	address tokenB = 0x24aa189dfaa76c671c279262f94434770f557c35;
 
 	mapping
 	(
@@ -64,19 +48,11 @@ contract Options
 	)
 	public expiryBlock;
 
-	mapping
-	(
-		uint256 => address;
-	)
-	public reseller;
-
 	function create
 	(
 		address _saleToken,
 		uint256 _saleAmount,
-		address _tokenA,
 		uint256 _amountA,
-		address _tokenB,
 		uint256 _amountB,
 		uint256 _expiryBlock
 	)
@@ -85,25 +61,11 @@ contract Options
 		ERC20(tokenA[_id]).transferFrom(msg.sender, this.address, amountA[_id]);
 
 		count++;
-		seller[count] = msg.sender;
-		saleToken[count] = _saleToken;
-		saleAmount[count] = _saleAmount;
-		tokenA[count] = _tokenA;
+		writer[count] = msg.sender;
+		ownerOf[count] = msg.sender;
 		amountA[count] = _amountA;
-		tokenB[count] = _tokenB;
 		amountB[count] = _amountB;
 		expiryBlock[count] = _expiryBlock;
-		reseller[count] = _msg.sender;
-	}
-
-	function purchase
-	(
-		uint256 _id;
-	)
-	public
-	{
-		ERC20(saleToken[_id]).transferFrom(msg.sender, reseller[_id], saleAmount[_id]);
-		owner[_id] = msg.sender;
 	}
 
 	function exercise
@@ -125,25 +87,23 @@ contract Options
 		ERC20(_tokenB[_id]).transferFrom(msg.sender, seller[_id], amountB[_id]);
 	}
 
-	function list
+	function transfer
 	(
-		uint256 _id,
-		address _saleToken,
-		uint256 _saleAmount
+		uint256 _id;
 	)
 	public
 	{
-		if (block.number > expiryblock[_id])
-		{
-			return;
-		}
-		if (msg.sender != owner[_id])
-		{
-			return;
-		}
+		// similar to ERC20 transfer
+	}
 
-		reseller[_id] = msg.sender;
-		saleToken[_id] = _saleToken;
-		saleAmount[_id] = _saleAmount;
+	function cancel
+	(
+		uint256 _id
+	)
+	public
+	{
+		// cancel contract and get tokens back
+		// only if person calling function is contract writer
+		// only if person calling function is contract owner ()
 	}
 }
